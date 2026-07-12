@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   Link2,
@@ -81,15 +81,6 @@ function ExampleResult() {
 }
 
 export function HeroSection() {
-  const router = useRouter();
-  const [url, setUrl] = useState("");
-
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    if (url.trim()) {
-      router.push("/signin");
-    }
-  };
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 sm:pt-18">
@@ -141,34 +132,29 @@ export function HeroSection() {
           </motion.p>
 
           {/* URL Input */}
-          <motion.form
-            onSubmit={handleSubmit}
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
             className="mt-8 sm:mt-10 max-w-xl mx-auto"
           >
-            <div className="relative flex items-center gap-2 p-1.5 rounded-2xl bg-card border border-border/60 shadow-lg shadow-black/5 dark:shadow-black/20 has-[input:focus]:border-brand/40 has-[input:focus]:shadow-glow-sm transition-all duration-300">
+            <div className="relative flex items-center gap-2 p-1.5 rounded-2xl bg-card border border-border/60 shadow-lg shadow-black/5 dark:shadow-black/20 transition-all duration-300">
               <div className="flex-1 flex items-center gap-2 pl-3 sm:pl-4">
                 <Link2 className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                <input
-                  type="url"
-                  placeholder="Paste your long URL here..."
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  className="flex-1 bg-transparent border-none outline-none text-sm sm:text-base py-2.5 text-foreground placeholder:text-muted-foreground/50 min-w-0"
-                />
+                <span className="flex-1 text-left text-sm sm:text-base py-2.5 text-muted-foreground/50 min-w-0">
+                  Paste your long URL here...
+                </span>
               </div>
-              <button
-                type="submit"
+              <Link
+                href="/signin"
                 className="relative inline-flex h-10 sm:h-11 items-center justify-center gap-1.5 rounded-xl bg-gradient-to-br from-brand to-brand-dark px-4 sm:px-5 text-sm font-medium text-white shadow-lg shadow-brand/20 hover:shadow-brand/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 whitespace-nowrap"
               >
                 <Zap className="w-4 h-4" />
                 <span>Shorten URL</span>
                 <ArrowRight className="w-3.5 h-3.5 hidden sm:inline" />
-              </button>
+              </Link>
             </div>
-          </motion.form>
+          </motion.div>
 
           {/* Example Result */}
           <motion.div

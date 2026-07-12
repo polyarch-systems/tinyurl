@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Link2 } from "lucide-react";
 
@@ -42,9 +43,12 @@ export function Navbar() {
                 {item.label}
               </a>
             ))}
-            <button className="relative inline-flex h-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand to-brand-dark px-4 text-sm font-medium text-white shadow-lg shadow-brand/20 hover:shadow-brand/30 transition-all duration-300 active:scale-[0.98]">
+            <Link
+              href="/signin"
+              className="relative inline-flex h-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand to-brand-dark px-4 text-sm font-medium text-white shadow-lg shadow-brand/20 hover:shadow-brand/30 transition-all duration-300 active:scale-[0.98]"
+            >
               Get Started
-            </button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -82,9 +86,13 @@ export function Navbar() {
                   {item.label}
                 </a>
               ))}
-              <button className="w-full mt-2 inline-flex h-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand to-brand-dark px-4 text-sm font-medium text-white shadow-lg shadow-brand/20">
+              <Link
+                href="/signin"
+                className="w-full mt-2 inline-flex h-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand to-brand-dark px-4 text-sm font-medium text-white shadow-lg shadow-brand/20"
+                onClick={() => setMobileOpen(false)}
+              >
                 Get Started
-              </button>
+              </Link>
             </div>
           </motion.div>
         )}
