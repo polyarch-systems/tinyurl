@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   Link2,
@@ -80,13 +81,13 @@ function ExampleResult() {
 }
 
 export function HeroSection() {
+  const router = useRouter();
   const [url, setUrl] = useState("");
-  const [isShortened, setIsShortened] = useState(false);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (url.trim()) {
-      setIsShortened(true);
+      router.push("/signin");
     }
   };
 
@@ -170,15 +171,14 @@ export function HeroSection() {
           </motion.form>
 
           {/* Example Result */}
-          {isShortened && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-4 max-w-xl mx-auto"
-            >
-              <ExampleResult />
-            </motion.div>
-          )}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="mt-4 max-w-xl mx-auto"
+          >
+            <ExampleResult />
+          </motion.div>
 
           {/* Trust Bar */}
           <motion.div
