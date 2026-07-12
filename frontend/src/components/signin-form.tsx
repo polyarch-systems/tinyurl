@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Link2, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { signIn } from "@/lib/auth";
 
 function GitHubIcon() {
   return (
@@ -26,6 +28,7 @@ function GoogleIcon() {
 }
 
 export function SignInForm() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -34,7 +37,10 @@ export function SignInForm() {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => setLoading(false), 1000);
+    setTimeout(() => {
+      signIn(email || "user@tinyurl.com");
+      router.push("/dashboard");
+    }, 800);
   };
 
   return (
