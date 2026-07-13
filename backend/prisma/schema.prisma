@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum LinkStatus {
+  active
+  expired
+  disabled
+}
+
+model Plan {
+  id                 String   @id @default(uuid()) @db.Uuid
+  name               String   @unique @db.VarChar(50)
+  description        String   @db.Text
+  priceMonthlyCents  Int
+  priceAnnuallyCents Int
+  linkLimit          BigInt
+  features           Json     @default("[]")
+  isPopular          Boolean  @default(false)
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  users User[]
+
+  @@map("plans")
+}
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique @db.VarChar(255)
+  name         String   @db.VarChar(255)
+  passwordHash String?  @map("password_hash") @db.VarChar(255)
+  avatarUrl    String?  @map("avatar_url") @db.VarChar(512)
+  planId       String?  @map("plan_id") @db.Uuid
+  linksUsed    BigInt   @default(0) @map("links_used")
+  linkLimit    BigInt   @default(1000) @map("link_limit")
+  teamMembers  Int      @default(1) @map("team_members")
+  joinedAt     DateTime @default(now()) @map("joined_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  plan        Plan?        @relation(fields: [planId], references: [id])
+  links       Link[]
+  clickEvents ClickEvent[]
+  refreshTokens RefreshToken[]
+
+  @@index([planId])
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  token     String   @unique @db.VarChar(512)
+  userId    String   @map("user_id") @db.Uuid
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("refresh_tokens")
+}
+
+model Link {
+  id          String     @id @default(uuid()) @db.Uuid
+  userId      String     @map("user_id") @db.Uuid
+  originalUrl String     @map("original_url") @db.Text
+  shortCode   String     @unique @map("short_code") @db.VarChar(20)
+  clicks      BigInt     @default(0)
+  status      LinkStatus @default(active)
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  expiresAt   DateTime?  @map("expires_at")
+
+  user        User        @relation(fields: [userId], references: [id])
+  clickEvents ClickEvent[]
+
+  @@index([userId])
+  @@index([userId, clicks(sort: Desc)])
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([status])
+  @@index([expiresAt])
+  @@map("links")
+}
+
+model ClickEvent {
+  id        String   @id @default(uuid()) @db.Uuid
+  linkId    String   @map("link_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  country   String?  @db.VarChar(2)
+  city      String?  @db.VarChar(255)
+  device    String?  @db.VarChar(50)
+  browser   String?  @db.VarChar(50)
+  referrer  String?  @db.Text
+  ipAddress String?  @map("ip_address") @db.Inet
+  createdAt DateTime @default(now()) @map("created_at")
+
+  link Link @relation(fields: [linkId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([linkId])
+  @@index([userId, createdAt(sort: Desc)], map: "click_events_user_id_created_at_desc_idx")
+  @@index([userId, createdAt], map: "click_events_user_id_created_at_asc_idx")
+  @@index([createdAt])
+  @@map("click_events")
+}
