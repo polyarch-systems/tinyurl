@@ -1,4 +1,3 @@
-import { env } from "@/config/env";
 import { LinkStatus } from "@prisma/client";
 import {
   createLink,
