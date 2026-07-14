@@ -1,5 +1,5 @@
-import prisma from "@/config/prisma";
-import { LinkStatus } from "@prisma/client";
+import prisma from '@/config/prisma';
+import { LinkStatus, Prisma } from '@prisma/client';
 
 export async function createLink(data: {
   userId: string;
@@ -19,28 +19,25 @@ export async function findLinkById(id: string) {
 }
 
 export async function findLinksByUserId(userId: string, skip = 0, take = 20, search?: string) {
-  const where: any = { userId };
+  const where: Prisma.LinkWhereInput = { userId };
   if (search) {
-    where.OR = [
-      { originalUrl: { contains: search } },
-      { shortCode: { contains: search } },
-    ];
+    where.OR = [{ originalUrl: { contains: search } }, { shortCode: { contains: search } }];
   }
-  return prisma.link.findMany({ where, skip, take, orderBy: { createdAt: "desc" } });
+  return prisma.link.findMany({ where, skip, take, orderBy: { createdAt: 'desc' } });
 }
 
 export async function countLinksByUserId(userId: string, search?: string): Promise<number> {
-  const where: any = { userId };
+  const where: Prisma.LinkWhereInput = { userId };
   if (search) {
-    where.OR = [
-      { originalUrl: { contains: search } },
-      { shortCode: { contains: search } },
-    ];
+    where.OR = [{ originalUrl: { contains: search } }, { shortCode: { contains: search } }];
   }
   return prisma.link.count({ where });
 }
 
-export async function updateLink(id: string, data: { originalUrl?: string; status?: LinkStatus; expiresAt?: Date | null }) {
+export async function updateLink(
+  id: string,
+  data: { originalUrl?: string; status?: LinkStatus; expiresAt?: Date | null }
+) {
   return prisma.link.update({ where: { id }, data });
 }
 
@@ -55,7 +52,7 @@ export async function incrementLinkClicks(id: string) {
 export async function findTopLinksByUserId(userId: string, limit = 5) {
   return prisma.link.findMany({
     where: { userId },
-    orderBy: { clicks: "desc" },
+    orderBy: { clicks: 'desc' },
     take: limit,
   });
 }
