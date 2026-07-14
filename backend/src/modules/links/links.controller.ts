@@ -69,7 +69,12 @@ export async function updateLinkHandler(c: Context) {
     } = {
       originalUrl: parsed.originalUrl,
       status: parsed.status,
-      expiresAt: typeof parsed.expiresAt === 'string' ? new Date(parsed.expiresAt) : null,
+      expiresAt:
+        typeof parsed.expiresAt === 'string'
+          ? new Date(parsed.expiresAt)
+          : parsed.expiresAt === null
+            ? null
+            : undefined,
     };
     const link = await updateExistingLink(id, user.id, data);
     return c.json({ ...link, shortUrl: `${process.env.BASE_URL}/r/${link.shortCode}` });

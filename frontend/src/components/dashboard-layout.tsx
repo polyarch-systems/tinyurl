@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -14,7 +14,7 @@ import {
   LogOut,
   ChevronLeft,
 } from "lucide-react";
-import { signOut, getSession } from "@/lib/auth";
+import { signOut, getSession, type AuthSession } from "@/lib/auth";
 
 const sidebarItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -28,8 +28,11 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const [session, setSession] = useState<AuthSession | null>(null);
 
-  const session = getSession();
+  useEffect(() => {
+    setSession(getSession());
+  }, []);
 
   const handleSignOut = () => {
     signOut();
@@ -154,7 +157,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2.5">
               <div className="w-7 h-7 rounded-full bg-gradient-to-br from-brand to-brand-dark flex items-center justify-center text-[10px] font-bold text-white">
-                {session?.name?.charAt(0).toUpperCase() || "U"}
+                {session?.name?.charAt(0).toUpperCase()}
               </div>
               <span className="text-sm font-medium text-foreground hidden sm:block">
                 {session?.name || "User"}
