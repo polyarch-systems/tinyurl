@@ -34,9 +34,6 @@ export async function createLinkHandler(c: Context) {
 
 export async function getLinksHandler(c: Context) {
   try {
-    console.log("getLinksHandler");
-
-    debugger;
     const user = c.get('user');
     const page = Number(c.req.query('page') || 1);
     const limit = Number(c.req.query('limit') || 20);

@@ -9,8 +9,9 @@ import {
   incrementLinkClicks,
   findTopLinksByUserId,
   findLinkByShortCode,
-} from "@/repositories/link.repository";
-import { incrementLinksUsed, decrementLinksUsed } from "@/repositories/mock-data";
+  incrementLinksUsed,
+  decrementLinksUsed,
+} from "@/repositories/mock-data";
 
 export async function createNewLink(userId: string, data: { originalUrl: string; shortCode: string; expiresAt?: Date }) {
   const link = await createLink({ ...data, userId });
