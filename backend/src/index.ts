@@ -1,10 +1,11 @@
+import { serve } from "@hono/node-server";
 import app from "@/app";
 
-const port = process.env.PORT || 3001;
+const port = Number(process.env.PORT) || 3001;
 
 console.log(`🚀 Server running on http://localhost:${port}`);
 
-export default {
-  port,
+serve({
   fetch: app.fetch,
-};
+  port,
+});

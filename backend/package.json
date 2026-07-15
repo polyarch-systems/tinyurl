@@ -22,6 +22,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@hono/node-server": "^2.0.9",
     "@hono/zod-openapi": "^1.5.0",
     "@prisma/client": "^6.19.3",
     "@scalar/hono-api-reference": "^0.11.9",
