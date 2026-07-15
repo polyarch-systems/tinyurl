@@ -1,4 +1,4 @@
-import { LinkStatus } from "@prisma/client";
+import type { LinkStatus } from "@/repositories/mock-data";
 import {
   createLink,
   findLinkById,

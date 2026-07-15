@@ -1,5 +1,5 @@
 import { Context } from 'hono';
-import { LinkStatus } from '@prisma/client';
+import type { LinkStatus } from '@/repositories/mock-data';
 import {
   createNewLink,
   getLink,
