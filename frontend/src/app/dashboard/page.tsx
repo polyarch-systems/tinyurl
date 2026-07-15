@@ -6,48 +6,21 @@ import {
   MousePointerClick,
   TrendingUp,
   Activity,
-  ExternalLink,
   Copy,
   Check,
-  ArrowUpRight,
 } from "lucide-react";
-import { useState } from "react";
-import { mockLinks, recentVisitors, accountInfo } from "@/lib/mock-data";
-
-const statCards = [
-  {
-    label: "Total Links",
-    value: mockLinks.length.toString(),
-    change: "+2 this week",
-    icon: Link2,
-    color: "from-brand/10 to-brand/5",
-    iconColor: "text-brand",
-  },
-  {
-    label: "Total Visits",
-    value: "13,240",
-    change: "+18.2% vs last week",
-    icon: MousePointerClick,
-    color: "from-emerald-500/10 to-emerald-500/5",
-    iconColor: "text-emerald-500",
-  },
-  {
-    label: "Total Clicks",
-    value: "21,876",
-    change: "+12.4% vs last week",
-    icon: TrendingUp,
-    color: "from-violet-500/10 to-violet-500/5",
-    iconColor: "text-violet-500",
-  },
-  {
-    label: "Active Plan",
-    value: accountInfo.plan,
-    change: `${accountInfo.linksUsed.toLocaleString()} / ${accountInfo.linkLimit.toLocaleString()} links used`,
-    icon: Activity,
-    color: "from-amber-500/10 to-amber-500/5",
-    iconColor: "text-amber-500",
-  },
-];
+import { useState, useEffect } from "react";
+import {
+  getLinks,
+  getTopLinks,
+  getRecentVisitors,
+  getCtrStats,
+  getStoredUser,
+  type Link,
+  type RecentVisitor,
+  type CtrStats,
+  type User,
+} from "@/lib/api";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -68,12 +41,90 @@ const itemVariants = {
 
 export default function DashboardPage() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [links, setLinks] = useState<Link[]>([]);
+  const [topPerforming, setTopPerforming] = useState<Link[]>([]);
+  const [visitors, setVisitors] = useState<RecentVisitor[]>([]);
+  const [ctrStats, setCtrStats] = useState<CtrStats | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const [linksRes, topRes, visitorsRes, ctrRes] = await Promise.all([
+          getLinks({ limit: 5 }),
+          getTopLinks(5),
+          getRecentVisitors(5),
+          getCtrStats(),
+        ]);
+        setLinks(linksRes.links);
+        setTopPerforming(topRes);
+        setVisitors(visitorsRes);
+        setCtrStats(ctrRes);
+        setUser(getStoredUser());
+      } catch {
+        // silent
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
+
+  const totalClicks = links.reduce((sum, l) => sum + l.clicks, 0);
+
+  const statCards = [
+    {
+      label: "Total Links",
+      value: user ? String(user.linksUsed) : String(links.length),
+      change: `${links.length} active`,
+      icon: Link2,
+      color: "from-brand/10 to-brand/5",
+      iconColor: "text-brand",
+    },
+    {
+      label: "Total Clicks",
+      value: ctrStats
+        ? ctrStats.totalClicks.toLocaleString()
+        : totalClicks.toLocaleString(),
+      change: `${ctrStats ? ctrStats.totalUniques.toLocaleString() : "0"} unique`,
+      icon: MousePointerClick,
+      color: "from-emerald-500/10 to-emerald-500/5",
+      iconColor: "text-emerald-500",
+    },
+    {
+      label: "CTR",
+      value: ctrStats ? `${ctrStats.ctr}%` : "—",
+      change: "Click-through rate",
+      icon: TrendingUp,
+      color: "from-violet-500/10 to-violet-500/5",
+      iconColor: "text-violet-500",
+    },
+    {
+      label: "Active Plan",
+      value: user?.plan || "Free",
+      change: user
+        ? `${user.linksUsed.toLocaleString()} / ${user.linkLimit.toLocaleString()} links used`
+        : "—",
+      icon: Activity,
+      color: "from-amber-500/10 to-amber-500/5",
+      iconColor: "text-amber-500",
+    },
+  ];
 
   const handleCopy = (url: string, id: string) => {
     navigator.clipboard.writeText(url);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="w-6 h-6 border-2 border-brand/30 border-t-brand rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -125,35 +176,39 @@ export default function DashboardPage() {
 
       {/* Recent activity + Top links */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Recent activity */}
+        {/* Recent visitors */}
         <motion.div variants={itemVariants} className="rounded-2xl bg-card border border-border/50 p-5 sm:p-6">
           <h2 className="text-sm font-semibold text-foreground mb-4">
             Recent Visitors
           </h2>
           <div className="space-y-3">
-            {recentVisitors.slice(0, 5).map((visitor, i) => (
-              <div
-                key={i}
-                className="flex items-center justify-between py-2 border-b border-border/30 last:border-0"
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center text-[10px] font-bold text-muted-foreground flex-shrink-0">
-                    {visitor.country}
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-sm text-foreground truncate">
-                      {visitor.city}, {visitor.country}
+            {visitors.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No visitors yet.</p>
+            ) : (
+              visitors.map((visitor, i) => (
+                <div
+                  key={visitor.id || i}
+                  className="flex items-center justify-between py-2 border-b border-border/30 last:border-0"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center text-[10px] font-bold text-muted-foreground flex-shrink-0">
+                      {visitor.country || "—"}
                     </div>
-                    <div className="text-xs text-muted-foreground">
-                      {visitor.device} · {visitor.browser}
+                    <div className="min-w-0">
+                      <div className="text-sm text-foreground truncate">
+                        {visitor.city || "Unknown"}, {visitor.country || "Unknown"}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {visitor.device || "Unknown"} · {visitor.browser || "Unknown"}
+                      </div>
                     </div>
                   </div>
+                  <span className="text-xs text-muted-foreground flex-shrink-0 ml-2">
+                    {new Date(visitor.timestamp).toLocaleDateString()}
+                  </span>
                 </div>
-                <span className="text-xs text-muted-foreground flex-shrink-0 ml-2">
-                  {visitor.time}
-                </span>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </motion.div>
 
@@ -163,10 +218,10 @@ export default function DashboardPage() {
             Top Performing Links
           </h2>
           <div className="space-y-3">
-            {[...mockLinks]
-              .sort((a, b) => b.clicks - a.clicks)
-              .slice(0, 5)
-              .map((link) => (
+            {topPerforming.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No links yet.</p>
+            ) : (
+              topPerforming.map((link) => (
                 <div
                   key={link.id}
                   className="flex items-center justify-between py-2 border-b border-border/30 last:border-0"
@@ -198,12 +253,13 @@ export default function DashboardPage() {
                     <span className="text-xs text-muted-foreground">clicks</span>
                   </div>
                 </div>
-              ))}
+              ))
+            )}
           </div>
         </motion.div>
       </div>
 
-      {/* Quick links */}
+      {/* Recent links */}
       <motion.div variants={itemVariants} className="rounded-2xl bg-card border border-border/50 p-5 sm:p-6">
         <h2 className="text-sm font-semibold text-foreground mb-4">
           Recent Links
@@ -219,32 +275,40 @@ export default function DashboardPage() {
               </tr>
             </thead>
             <tbody>
-              {mockLinks.slice(0, 5).map((link) => (
-                <tr key={link.id} className="border-b border-border/20 last:border-0">
-                  <td className="py-3 px-2">
-                    <span className="text-brand font-medium">{link.shortUrl}</span>
-                  </td>
-                  <td className="py-3 px-2 text-muted-foreground truncate max-w-[200px] hidden sm:table-cell">
-                    {link.originalUrl}
-                  </td>
-                  <td className="py-3 px-2 text-right font-medium text-foreground">
-                    {link.clicks.toLocaleString()}
-                  </td>
-                  <td className="py-3 px-2 text-right hidden md:table-cell">
-                    <span
-                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${
-                        link.status === "active"
-                          ? "bg-emerald-500/10 text-emerald-500"
-                          : link.status === "expired"
-                          ? "bg-amber-500/10 text-amber-500"
-                          : "bg-red-500/10 text-red-500"
-                      }`}
-                    >
-                      {link.status}
-                    </span>
+              {links.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="py-8 text-center text-sm text-muted-foreground">
+                    No links yet. Create your first link!
                   </td>
                 </tr>
-              ))}
+              ) : (
+                links.map((link) => (
+                  <tr key={link.id} className="border-b border-border/20 last:border-0">
+                    <td className="py-3 px-2">
+                      <span className="text-brand font-medium">{link.shortUrl}</span>
+                    </td>
+                    <td className="py-3 px-2 text-muted-foreground truncate max-w-[200px] hidden sm:table-cell">
+                      {link.originalUrl}
+                    </td>
+                    <td className="py-3 px-2 text-right font-medium text-foreground">
+                      {link.clicks.toLocaleString()}
+                    </td>
+                    <td className="py-3 px-2 text-right hidden md:table-cell">
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${
+                          link.status === "active"
+                            ? "bg-emerald-500/10 text-emerald-500"
+                            : link.status === "expired"
+                            ? "bg-amber-500/10 text-amber-500"
+                            : "bg-red-500/10 text-red-500"
+                        }`}
+                      >
+                        {link.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

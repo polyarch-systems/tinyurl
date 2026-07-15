@@ -1,18 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Copy,
   Check,
   ExternalLink,
-  Edit,
   Trash2,
   Search,
   Plus,
   ArrowUpDown,
 } from "lucide-react";
-import { mockLinks, type Link } from "@/lib/mock-data";
+import {
+  getLinks,
+  createLink,
+  deleteLink,
+  type Link,
+} from "@/lib/api";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -39,6 +43,19 @@ export default function LinksPage() {
   const [search, setSearch] = useState("");
   const [sortField, setSortField] = useState<SortField>("createdAt");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
+  const [links, setLinks] = useState<Link[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showCreate, setShowCreate] = useState(false);
+  const [createUrl, setCreateUrl] = useState("");
+  const [createCode, setCreateCode] = useState("");
+  const [creating, setCreating] = useState(false);
+
+  useEffect(() => {
+    getLinks({ limit: 100 })
+      .then((res) => setLinks(res.links))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
 
   const handleCopy = (url: string, id: string) => {
     navigator.clipboard.writeText(url);
@@ -55,7 +72,37 @@ export default function LinksPage() {
     }
   };
 
-  const filtered = mockLinks
+  const handleCreate = async () => {
+    if (!createUrl) return;
+    setCreating(true);
+    try {
+      await createLink({
+        originalUrl: createUrl,
+        shortCode: createCode || undefined,
+      });
+      setCreateUrl("");
+      setCreateCode("");
+      setShowCreate(false);
+      const res = await getLinks({ limit: 100 });
+      setLinks(res.links);
+    } catch {
+      // silent
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Delete this link?")) return;
+    try {
+      await deleteLink(id);
+      setLinks((prev) => prev.filter((l) => l.id !== id));
+    } catch {
+      // silent
+    }
+  };
+
+  const filtered = links
     .filter(
       (link) =>
         link.originalUrl.toLowerCase().includes(search.toLowerCase()) ||
@@ -64,7 +111,10 @@ export default function LinksPage() {
     .sort((a, b) => {
       const mul = sortDir === "asc" ? 1 : -1;
       if (sortField === "clicks") return (a.clicks - b.clicks) * mul;
-      return (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()) * mul;
+      return (
+        (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()) *
+        mul
+      );
     });
 
   const statusColor = (status: Link["status"]) => {
@@ -78,6 +128,14 @@ export default function LinksPage() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="w-6 h-6 border-2 border-brand/30 border-t-brand rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <motion.div
       variants={containerVariants}
@@ -86,7 +144,10 @@ export default function LinksPage() {
       className="max-w-6xl mx-auto"
     >
       {/* Page header */}
-      <motion.div variants={itemVariants} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+      <motion.div
+        variants={itemVariants}
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8"
+      >
         <div>
           <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
             Links
@@ -95,11 +156,50 @@ export default function LinksPage() {
             Manage all your shortened URLs in one place.
           </p>
         </div>
-        <button className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl bg-gradient-to-br from-brand to-brand-dark px-4 text-sm font-medium text-white shadow-lg shadow-brand/20 hover:shadow-brand/30 transition-all duration-300 active:scale-[0.98] self-start">
+        <button
+          onClick={() => setShowCreate(!showCreate)}
+          className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl bg-gradient-to-br from-brand to-brand-dark px-4 text-sm font-medium text-white shadow-lg shadow-brand/20 hover:shadow-brand/30 transition-all duration-300 active:scale-[0.98] self-start"
+        >
           <Plus className="w-4 h-4" />
           Create Link
         </button>
       </motion.div>
+
+      {/* Create form */}
+      {showCreate && (
+        <motion.div
+          variants={itemVariants}
+          className="rounded-2xl bg-card border border-border/50 p-5 mb-6"
+        >
+          <div className="flex flex-col sm:flex-row gap-3">
+            <input
+              type="url"
+              placeholder="https://example.com/very-long-url"
+              value={createUrl}
+              onChange={(e) => setCreateUrl(e.target.value)}
+              className="flex-1 h-10 px-3 rounded-xl border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground/50 outline-none transition-all duration-200 focus:border-brand/40 focus:shadow-glow-sm"
+            />
+            <input
+              type="text"
+              placeholder="Custom code (optional)"
+              value={createCode}
+              onChange={(e) => setCreateCode(e.target.value)}
+              className="w-full sm:w-48 h-10 px-3 rounded-xl border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground/50 outline-none transition-all duration-200 focus:border-brand/40 focus:shadow-glow-sm"
+            />
+            <button
+              onClick={handleCreate}
+              disabled={creating || !createUrl}
+              className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl bg-gradient-to-br from-brand to-brand-dark px-4 text-sm font-medium text-white shadow-lg shadow-brand/20 hover:shadow-brand/30 transition-all duration-300 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {creating ? (
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                "Create"
+              )}
+            </button>
+          </div>
+        </motion.div>
+      )}
 
       {/* Search */}
       <motion.div variants={itemVariants} className="relative mb-6">
@@ -116,7 +216,10 @@ export default function LinksPage() {
       </motion.div>
 
       {/* Table */}
-      <motion.div variants={itemVariants} className="rounded-2xl bg-card border border-border/50 overflow-hidden">
+      <motion.div
+        variants={itemVariants}
+        className="rounded-2xl bg-card border border-border/50 overflow-hidden"
+      >
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -156,7 +259,10 @@ export default function LinksPage() {
             <tbody>
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-sm text-muted-foreground">
+                  <td
+                    colSpan={6}
+                    className="py-12 text-center text-sm text-muted-foreground"
+                  >
                     No links found.
                   </td>
                 </tr>
@@ -190,7 +296,7 @@ export default function LinksPage() {
                       {link.clicks.toLocaleString()}
                     </td>
                     <td className="py-3.5 px-4 text-right text-muted-foreground hidden sm:table-cell">
-                      {link.createdAt}
+                      {new Date(link.createdAt).toLocaleDateString()}
                     </td>
                     <td className="py-3.5 px-4 text-center hidden sm:table-cell">
                       <span
@@ -203,13 +309,18 @@ export default function LinksPage() {
                     </td>
                     <td className="py-3.5 px-4">
                       <div className="flex items-center justify-end gap-1">
-                        <button className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground">
+                        <a
+                          href={link.originalUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                        >
                           <ExternalLink className="w-3.5 h-3.5" />
-                        </button>
-                        <button className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground">
-                          <Edit className="w-3.5 h-3.5" />
-                        </button>
-                        <button className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-red-500/10 transition-colors text-muted-foreground hover:text-red-500">
+                        </a>
+                        <button
+                          onClick={() => handleDelete(link.id)}
+                          className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-red-500/10 transition-colors text-muted-foreground hover:text-red-500"
+                        >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>

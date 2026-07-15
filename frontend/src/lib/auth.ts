@@ -1,6 +1,13 @@
 "use client";
 
-const AUTH_KEY = "tinyurl_auth";
+import {
+  signin as apiSignin,
+  signup as apiSignup,
+  storeAuth,
+  clearAuth,
+  getStoredUser,
+  type User,
+} from "@/lib/api";
 
 export interface AuthSession {
   email: string;
@@ -8,30 +15,38 @@ export interface AuthSession {
   signedInAt: number;
 }
 
-export function signIn(email: string): void {
-  const session: AuthSession = {
-    email,
-    name: email.split("@")[0],
-    signedInAt: Date.now(),
-  };
-  localStorage.setItem(AUTH_KEY, JSON.stringify(session));
+export async function signIn(email: string, password: string): Promise<void> {
+  const result = await apiSignin({ email, password });
+  storeAuth(result.token, result.refreshToken, result.user);
+}
+
+export async function signUp(
+  email: string,
+  password: string,
+  name: string
+): Promise<void> {
+  const result = await apiSignup({ email, password, name });
+  storeAuth(result.token, result.refreshToken, result.user);
 }
 
 export function signOut(): void {
-  localStorage.removeItem(AUTH_KEY);
+  clearAuth();
 }
 
 export function getSession(): AuthSession | null {
-  if (typeof window === "undefined") return null;
-  const raw = localStorage.getItem(AUTH_KEY);
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw) as AuthSession;
-  } catch {
-    return null;
-  }
+  const user = getStoredUser();
+  if (!user) return null;
+  return {
+    email: user.email,
+    name: user.name,
+    signedInAt: Date.now(),
+  };
 }
 
 export function isAuthenticated(): boolean {
-  return getSession() !== null;
+  return getStoredUser() !== null;
+}
+
+export function getUser(): User | null {
+  return getStoredUser();
 }

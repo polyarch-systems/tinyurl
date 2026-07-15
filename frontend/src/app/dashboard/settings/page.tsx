@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   User,
@@ -7,11 +8,9 @@ import {
   Link2,
   BarChart3,
   Shield,
-  Check,
   ArrowRight,
 } from "lucide-react";
-import { accountInfo } from "@/lib/mock-data";
-import { getSession } from "@/lib/auth";
+import { getStoredUser, type User as UserType } from "@/lib/api";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -31,7 +30,7 @@ const itemVariants = {
 };
 
 export default function SettingsPage() {
-  const session = getSession();
+  const [user] = useState<UserType | null>(() => getStoredUser());
 
   return (
     <motion.div
@@ -65,7 +64,7 @@ export default function SettingsPage() {
                 Email
               </label>
               <div className="text-sm text-foreground bg-muted/30 rounded-xl px-3.5 py-2.5 border border-border/50">
-                {session?.email || accountInfo.email}
+                {user?.email || "—"}
               </div>
             </div>
             <div>
@@ -73,7 +72,7 @@ export default function SettingsPage() {
                 Name
               </label>
               <div className="text-sm text-foreground bg-muted/30 rounded-xl px-3.5 py-2.5 border border-border/50">
-                {session?.name || "User"}
+                {user?.name || "—"}
               </div>
             </div>
             <div>
@@ -81,7 +80,12 @@ export default function SettingsPage() {
                 Member Since
               </label>
               <div className="text-sm text-foreground bg-muted/30 rounded-xl px-3.5 py-2.5 border border-border/50">
-                {accountInfo.joined}
+                {user?.joinedAt
+                  ? new Date(user.joinedAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                    })
+                  : "—"}
               </div>
             </div>
             <div>
@@ -89,7 +93,7 @@ export default function SettingsPage() {
                 Team Members
               </label>
               <div className="text-sm text-foreground bg-muted/30 rounded-xl px-3.5 py-2.5 border border-border/50">
-                {accountInfo.teamMembers}
+                {user?.teamMembers ?? "—"}
               </div>
             </div>
           </div>
@@ -108,15 +112,15 @@ export default function SettingsPage() {
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-lg font-bold text-foreground">
-                  {accountInfo.plan}
+                  {user?.plan || "Free"}
                 </span>
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[11px] font-semibold text-emerald-500">
                   Active
                 </span>
               </div>
               <p className="text-sm text-muted-foreground mt-0.5">
-                ${accountInfo.plan === "Pro" ? "29" : "0"}/month ·{" "}
-                {accountInfo.linkLimit.toLocaleString()} links/month
+                {user?.plan === "Pro" ? "$29/month" : "Free tier"} ·{" "}
+                {user?.linkLimit?.toLocaleString() || "—"} links/month
               </p>
             </div>
             <button className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl bg-gradient-to-br from-brand to-brand-dark px-4 text-sm font-medium text-white shadow-lg shadow-brand/20 hover:shadow-brand/30 transition-all duration-300 active:scale-[0.98] self-start sm:self-auto">
@@ -131,7 +135,7 @@ export default function SettingsPage() {
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-xs font-medium text-muted-foreground">Link Usage</span>
                 <span className="text-xs text-muted-foreground">
-                  {accountInfo.linksUsed.toLocaleString()} / {accountInfo.linkLimit.toLocaleString()}
+                  {user?.linksUsed?.toLocaleString() || "0"} / {user?.linkLimit?.toLocaleString() || "—"}
                 </span>
               </div>
               <div className="h-2 rounded-full bg-muted overflow-hidden">
@@ -139,7 +143,7 @@ export default function SettingsPage() {
                   className="h-full rounded-full bg-gradient-to-r from-brand to-brand-dark transition-all duration-500"
                   style={{
                     width: `${Math.min(
-                      (accountInfo.linksUsed / accountInfo.linkLimit) * 100,
+                      ((user?.linksUsed || 0) / (user?.linkLimit || 1)) * 100,
                       100
                     )}%`,
                   }}
@@ -164,30 +168,34 @@ export default function SettingsPage() {
                 Links Created
               </div>
               <div className="text-xl font-bold text-foreground">
-                {accountInfo.linksUsed.toLocaleString()}
+                {user?.linksUsed?.toLocaleString() || "0"}
               </div>
               <div className="text-[11px] text-muted-foreground mt-0.5">
-                of {accountInfo.linkLimit.toLocaleString()} limit
+                of {user?.linkLimit?.toLocaleString() || "—"} limit
               </div>
             </div>
             <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
               <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
                 <BarChart3 className="w-3.5 h-3.5" />
-                Total Clicks
+                Plan
               </div>
-              <div className="text-xl font-bold text-foreground">21,876</div>
+              <div className="text-xl font-bold text-foreground">
+                {user?.plan || "Free"}
+              </div>
               <div className="text-[11px] text-emerald-500 mt-0.5 font-medium">
-                +12.4% this month
+                {user?.plan === "Pro" ? "Premium features" : "Basic features"}
               </div>
             </div>
             <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
               <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
                 <Shield className="w-3.5 h-3.5" />
-                Security
+                Team
               </div>
-              <div className="text-xl font-bold text-foreground">SOC 2</div>
+              <div className="text-xl font-bold text-foreground">
+                {user?.teamMembers ?? 0}
+              </div>
               <div className="text-[11px] text-emerald-500 mt-0.5 font-medium">
-                Compliant
+                Team members
               </div>
             </div>
           </div>

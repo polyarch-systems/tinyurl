@@ -34,13 +34,15 @@ export function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      signIn(email || "user@tinyurl.com");
+    try {
+      await signIn(email, password);
       router.push("/dashboard");
-    }, 800);
+    } catch {
+      setLoading(false);
+    }
   };
 
   return (
