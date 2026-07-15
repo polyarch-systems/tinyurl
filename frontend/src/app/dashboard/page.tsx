@@ -87,7 +87,11 @@ export default function DashboardPage() {
       value: ctrStats
         ? ctrStats.totalClicks.toLocaleString()
         : totalClicks.toLocaleString(),
-      change: `${ctrStats ? ctrStats.totalUniques.toLocaleString() : "0"} unique`,
+      change: `${
+        ctrStats && ctrStats.totalUniques
+          ? ctrStats.totalUniques.toLocaleString()
+          : "0"
+      } unique`,
       icon: MousePointerClick,
       color: "from-emerald-500/10 to-emerald-500/5",
       iconColor: "text-emerald-500",

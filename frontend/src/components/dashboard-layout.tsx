@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -28,7 +28,11 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
-  const [session] = useState<AuthSession | null>(() => getSession());
+  const [session, setSession] = useState<AuthSession | null>(null);
+
+  useEffect(() => {
+    setSession(getSession());
+  }, []);
 
   const handleSignOut = () => {
     signOut();
@@ -153,7 +157,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2.5">
               <div className="w-7 h-7 rounded-full bg-gradient-to-br from-brand to-brand-dark flex items-center justify-center text-[10px] font-bold text-white">
-                {session?.name?.charAt(0).toUpperCase()}
+                {session?.name ? session.name.charAt(0).toUpperCase() : "U"}
               </div>
               <span className="text-sm font-medium text-foreground hidden sm:block">
                 {session?.name || "User"}
