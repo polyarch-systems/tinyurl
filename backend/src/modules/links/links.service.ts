@@ -63,5 +63,6 @@ export async function resolveShortCode(shortCode: string) {
 }
 
 export async function getTopLinks(userId: string, limit = 5) {
+  debugger
   return findTopLinksByUserId(userId, limit);
 }

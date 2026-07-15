@@ -223,8 +223,8 @@ const redirectGetRoute = createRoute({
 
 linksRoutes.openapi(createLinkRoute, createLinkHandler as Handler);
 linksRoutes.openapi(getLinksRoute, getLinksHandler as Handler);
+linksRoutes.openapi(topLinksRoute, topLinksHandler as Handler);
 linksRoutes.openapi(getLinkRoute, getLinkHandler as Handler);
 linksRoutes.openapi(updateLinkRoute, updateLinkHandler as Handler);
 linksRoutes.openapi(deleteLinkRoute, deleteLinkHandler as Handler);
-linksRoutes.openapi(topLinksRoute, topLinksHandler as Handler);
 linksRoutes.openapi(redirectGetRoute, redirectHandler as Handler);

@@ -38,6 +38,7 @@ export async function topLinksHandler(c: Context) {
     const user = c.get("user");
     const limit = Number(c.req.query("limit") || 5);
     const links = await getTopLinks(user.id, limit);
+    debugger
     return c.json(links);
   } catch (err: any) {
     return c.json({ error: err.message || "Failed to fetch top links" }, 400);
