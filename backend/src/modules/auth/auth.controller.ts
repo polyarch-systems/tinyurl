@@ -23,6 +23,7 @@ export async function signinHandler(c: Context) {
     const result = await signin(parsed);
     return c.json(result, 200);
   } catch (err: any) {
+    console.log(err)
     if (err.name === "ZodError") {
       return c.json({ error: "Validation failed", details: err.errors }, 401);
     }

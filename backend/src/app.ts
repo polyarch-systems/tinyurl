@@ -7,21 +7,21 @@ import { analyticsRoutes } from "@/modules/analytics/analytics.routes";
 import { redirectRoutes } from "@/modules/redirect/redirect.routes";
 import { authMiddleware } from "@/middleware/auth";
 
-const app = new OpenAPIHono();
+const api = new OpenAPIHono();
 
-app.use("*", cors());
+api.use("*", cors());
 
-app.get("/health", (c) => c.json({ status: "ok" }));
+api.get("/health", (c) => c.json({ status: "ok" }));
 
-app.route("/api/auth", authRoutes);
-app.route("/api/links", linksRoutes);
+api.route("/auth", authRoutes);
+api.use("/links/*", authMiddleware);
 
-app.use("/api/analytics", authMiddleware);
-app.route("/api/analytics", analyticsRoutes);
+api.route("/links", linksRoutes);
 
-app.route("/", redirectRoutes);
+api.use("/analytics", authMiddleware);
+api.route("/analytics", analyticsRoutes);
 
-app.doc("/openapi.json", {
+api.doc("/openapi.json", {
   openapi: "3.0.0",
   info: {
     title: "TinyURL API",
@@ -30,19 +30,24 @@ app.doc("/openapi.json", {
   },
   servers: [
     {
-      url: "http://localhost:3001",
+      url: "http://localhost:3001/api",
       description: "Local development server",
     },
   ],
 });
 
-app.get(
+api.get(
   "/docs",
   apiReference({
     spec: {
-      url: "/openapi.json",
+      url: "/api/openapi.json",
     },
   }),
 );
+
+const app = new OpenAPIHono();
+
+app.route("/api", api);
+app.route("/", redirectRoutes);
 
 export default app;

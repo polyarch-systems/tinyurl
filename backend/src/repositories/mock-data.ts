@@ -125,9 +125,9 @@ let links: Link[] = [
 let users: User[] = [
   {
     id: 'user-1',
-    email: 'user@tinyurl.com',
+    email: 'test@gmail.com',
     name: 'Test User',
-    passwordHash: 'hashed-password',
+    passwordHash: 'test',
     avatarUrl: null,
     planId: null,
     linksUsed: 8,
@@ -321,6 +321,176 @@ export async function decrementLinksUsed(userId: string) {
   user.linksUsed = Math.max(0, user.linksUsed - 1);
   user.updatedAt = new Date();
   return user;
+}
+
+export interface ClickEvent {
+  id: string;
+  linkId: string;
+  userId: string;
+  country: string | null;
+  city: string | null;
+  device: string | null;
+  browser: string | null;
+  referrer: string | null;
+  ipAddress: string | null;
+  createdAt: Date;
+}
+
+// Mock click event data
+let clickEvents: ClickEvent[] = [
+  {
+    id: 'ce1',
+    linkId: '1',
+    userId: 'user-1',
+    country: 'US',
+    city: 'New York',
+    device: 'Desktop',
+    browser: 'Chrome',
+    referrer: 'direct',
+    ipAddress: '192.168.1.1',
+    createdAt: new Date('2026-07-14T10:30:00Z'),
+  },
+  {
+    id: 'ce2',
+    linkId: '1',
+    userId: 'user-1',
+    country: 'US',
+    city: 'San Francisco',
+    device: 'Mobile',
+    browser: 'Safari',
+    referrer: 'twitter.com',
+    ipAddress: '192.168.1.2',
+    createdAt: new Date('2026-07-14T09:15:00Z'),
+  },
+  {
+    id: 'ce3',
+    linkId: '2',
+    userId: 'user-1',
+    country: 'GB',
+    city: 'London',
+    device: 'Desktop',
+    browser: 'Firefox',
+    referrer: 'google.com',
+    ipAddress: '192.168.1.3',
+    createdAt: new Date('2026-07-13T14:00:00Z'),
+  },
+  {
+    id: 'ce4',
+    linkId: '3',
+    userId: 'user-1',
+    country: 'DE',
+    city: 'Berlin',
+    device: 'Mobile',
+    browser: 'Chrome',
+    referrer: 'direct',
+    ipAddress: '192.168.1.4',
+    createdAt: new Date('2026-07-12T18:45:00Z'),
+  },
+  {
+    id: 'ce5',
+    linkId: '1',
+    userId: 'user-1',
+    country: 'US',
+    city: 'New York',
+    device: 'Tablet',
+    browser: 'Safari',
+    referrer: 'facebook.com',
+    ipAddress: '192.168.1.5',
+    createdAt: new Date('2026-07-11T07:20:00Z'),
+  },
+  {
+    id: 'ce6',
+    linkId: '5',
+    userId: 'user-1',
+    country: 'US',
+    city: 'Los Angeles',
+    device: 'Desktop',
+    browser: 'Chrome',
+    referrer: 'direct',
+    ipAddress: '192.168.1.6',
+    createdAt: new Date('2026-07-10T12:00:00Z'),
+  },
+  {
+    id: 'ce7',
+    linkId: '3',
+    userId: 'user-1',
+    country: 'FR',
+    city: 'Paris',
+    device: 'Mobile',
+    browser: 'Chrome',
+    referrer: 'twitter.com',
+    ipAddress: '192.168.1.7',
+    createdAt: new Date('2026-07-09T16:30:00Z'),
+  },
+  {
+    id: 'ce8',
+    linkId: '2',
+    userId: 'user-1',
+    country: 'US',
+    city: 'Chicago',
+    device: 'Desktop',
+    browser: 'Edge',
+    referrer: 'google.com',
+    ipAddress: '192.168.1.8',
+    createdAt: new Date('2026-07-08T08:00:00Z'),
+  },
+  {
+    id: 'ce9',
+    linkId: '4',
+    userId: 'user-1',
+    country: 'US',
+    city: 'Seattle',
+    device: 'Mobile',
+    browser: 'Chrome',
+    referrer: 'direct',
+    ipAddress: '192.168.1.9',
+    createdAt: new Date('2026-07-07T20:00:00Z'),
+  },
+  {
+    id: 'ce10',
+    linkId: '1',
+    userId: 'user-1',
+    country: 'CA',
+    city: 'Toronto',
+    device: 'Desktop',
+    browser: 'Firefox',
+    referrer: 'reddit.com',
+    ipAddress: '192.168.1.10',
+    createdAt: new Date('2026-07-06T11:00:00Z'),
+  },
+];
+
+// Click event repository mock functions
+export async function findRecentClickEventsByUserId(userId: string, limit = 10) {
+  return clickEvents
+    .filter((event) => event.userId === userId)
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+    .slice(0, limit);
+}
+
+export async function findVisitsOverTime(userId: string, days = 7) {
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - days);
+  return clickEvents
+    .filter((event) => event.userId === userId && event.createdAt >= startDate)
+    .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+}
+
+export async function countClickEventsByUserId(userId: string): Promise<number> {
+  return clickEvents.filter((event) => event.userId === userId).length;
+}
+
+export async function findTopLinksByClicks(userId: string, limit = 5) {
+  return links
+    .filter((link) => link.userId === userId)
+    .sort((a, b) => b.clicks - a.clicks)
+    .slice(0, limit)
+    .map((link) => ({
+      id: link.id,
+      originalUrl: link.originalUrl,
+      shortCode: link.shortCode,
+      clicks: link.clicks,
+    }));
 }
 
 // Password utility functions
