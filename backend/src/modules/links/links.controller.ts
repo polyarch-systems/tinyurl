@@ -14,7 +14,7 @@ import { createLinkSchema, updateLinkSchema } from '@/validators/link';
 export async function createLinkHandler(c: Context) {
   try {
     const user = c.get('user');
-    const body = await c.req.parseBody();
+    const body = await c.req.json();
     const parsed = createLinkSchema.parse(body);
     const shortCode = parsed.shortCode || Math.random().toString(36).substring(2, 10);
     const expiresAt = parsed.expiresAt ? new Date(parsed.expiresAt) : undefined;
@@ -60,7 +60,7 @@ export async function updateLinkHandler(c: Context) {
   try {
     const user = c.get('user');
     const id = c.req.param('id')!;
-    const body = await c.req.parseBody();
+    const body = await c.req.json();
     const parsed = updateLinkSchema.parse(body);
     const data: {
       originalUrl?: string;

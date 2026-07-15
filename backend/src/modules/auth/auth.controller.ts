@@ -4,7 +4,7 @@ import { signupSchema, signinSchema } from "@/validators/auth";
 
 export async function signupHandler(c: Context) {
   try {
-    const body = await c.req.parseBody();
+    const body = await c.req.json();
     const parsed = signupSchema.parse(body);
     const result = await signup(parsed);
     return c.json(result, 201);
@@ -18,7 +18,7 @@ export async function signupHandler(c: Context) {
 
 export async function signinHandler(c: Context) {
   try {
-    const body = await c.req.parseBody();
+    const body = await c.req.json();
     const parsed = signinSchema.parse(body);
     const result = await signin(parsed);
     return c.json(result, 200);
