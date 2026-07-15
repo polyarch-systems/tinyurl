@@ -1,61 +1,21 @@
-# Backend AGENTS
+Important philosophy:
 
-## Scope
+This project is intentionally an MVP.
 
-- Work only inside this folder.
-- Read the repository when necessary.
-- Never modify unrelated files.
+Do not over-engineer it.
 
-## Stack
+Prefer pragmatic, boring solutions over perfect architecture.
 
-- Hono
-- TypeScript
-- Prisma
-- PostgreSQL
-- Zod
+It's okay to leave some technical debt if it keeps the implementation simple and easy to understand.
 
-## Rules
+Avoid building abstractions for hypothetical future requirements.
 
-- Reuse existing code.
-- Reuse existing Zod schemas.
-- Keep business logic unchanged unless requested.
-- Prefer simple, production-ready solutions.
-- No unnecessary abstractions.
-- Keep code modular.
+If a piece of code is duplicated twice, that's acceptable.
 
-## Quality
+If a module feels a little "ugly" but is readable and easy to modify, prefer that over introducing another layer of abstraction.
 
-Before finishing:
+The goal is not architectural perfection.
 
-- build
-- typecheck
-- lint
+The goal is a project that feels like it was built by one experienced developer shipping features quickly.
 
-Fix all errors.
-
-## Git
-
-After every logical step:
-
-```bash
-git add .
-git commit -m "<meaningful conventional commit>"
-git push
-```
-
-Use small commits.
-
-## Permissions
-
-Do not ask before:
-
-- editing files
-- creating files
-- installing packages
-- running npm
-- generating Prisma Client
-- creating Prisma migrations
-- committing
-- pushing
-
-Ask only before destructive operations.
+Think "good startup code", not "enterprise framework".
