@@ -208,7 +208,7 @@ export async function getLinks(params?: {
   if (params?.limit) searchParams.set("limit", String(params.limit));
   if (params?.search) searchParams.set("search", params.search);
   const qs = searchParams.toString();
-  return request<PaginatedLinks>(`/api/links/${qs ? `?${qs}` : ""}`);
+  return request<PaginatedLinks>(`/api/links${qs ? `?${qs}` : ""}`);
 }
 
 export async function getLink(id: string): Promise<Link> {
