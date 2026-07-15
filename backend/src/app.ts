@@ -18,7 +18,7 @@ api.use("/links/*", authMiddleware);
 
 api.route("/links", linksRoutes);
 
-api.use("/analytics", authMiddleware);
+api.use("/analytics/*", authMiddleware);
 api.route("/analytics", analyticsRoutes);
 
 api.doc("/openapi.json", {
