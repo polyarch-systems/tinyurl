@@ -122,10 +122,10 @@ export default function AnalyticsPage() {
             Average CTR
           </div>
           <div className="text-2xl font-bold text-foreground">
-            {ctr ? `${ctr.ctr}%` : "—"}
+            {ctr?.ctr != null ? `${ctr.ctr}%` : "—"}
           </div>
           <div className="text-xs text-emerald-500 mt-1 font-medium">
-            {ctr ? `${ctr.totalClicks} total clicks` : ""}
+            {ctr?.totalClicks != null ? `${ctr.totalClicks} total clicks` : ""}
           </div>
         </motion.div>
         <motion.div variants={itemVariants} className="rounded-2xl bg-card border border-border/50 p-5">
@@ -134,7 +134,7 @@ export default function AnalyticsPage() {
             Total Unique Visitors
           </div>
           <div className="text-2xl font-bold text-foreground">
-            {ctr ? ctr.totalUniques.toLocaleString() : "—"}
+            {ctr?.totalUniques != null ? ctr.totalUniques.toLocaleString() : "—"}
           </div>
           <div className="text-xs text-muted-foreground mt-1">
             Unique click count
