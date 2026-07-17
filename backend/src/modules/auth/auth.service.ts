@@ -1,6 +1,7 @@
 import { env } from "@/config/env";
 import { signToken } from "@/utils/jwt";
 import { findUserByEmail, hashPassword, createUser } from "@/repositories/user.repository";
+import bcrypt from "bcryptjs";
 
 export async function signup(data: { email: string; name: string; password: string }) {
   const existing = await findUserByEmail(data.email);
@@ -38,13 +39,14 @@ export async function signup(data: { email: string; name: string; password: stri
 export async function signin(data: { email: string; password: string }) {
   const user = await findUserByEmail(data.email);
 
+  
   if (!user || !user.passwordHash) {
     throw new Error("Invalid credentials");
   }
 
-  // TODO: Must use a bcrypt
-  // const valid = await bcrypt.compare(data.password, user.passwordHash);
-  if (String(user.passwordHash) !== data.password) {
+  const valid = await bcrypt.compare(data.password, user.passwordHash);
+
+  if (!valid) {
     throw new Error("Invalid credentials");
   }
 
