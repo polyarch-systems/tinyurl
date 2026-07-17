@@ -121,6 +121,17 @@ export async function countClickEventsByUserId(userId: string): Promise<number> 
   return prisma.clickEvent.count({ where: { userId } });
 }
 
+export async function countUniqueClickEventsByUserId(userId: string): Promise<number> {
+  const result = await prisma.clickEvent.groupBy({
+    by: ["ipAddress"],
+    where: {
+      userId,
+      ipAddress: { not: null },
+    },
+  });
+  return result.length;
+}
+
 export async function findTopLinksByClicks(userId: string, limit = 5) {
   const links = await prisma.link.findMany({
     where: { userId },

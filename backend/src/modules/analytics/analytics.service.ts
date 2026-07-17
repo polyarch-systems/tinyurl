@@ -1,4 +1,4 @@
-import { findRecentClickEventsByUserId, findVisitsOverTime, findTopLinksByClicks, countClickEventsByUserId } from "@/repositories/link.repository";
+import { findRecentClickEventsByUserId, findVisitsOverTime, findTopLinksByClicks, countClickEventsByUserId, countUniqueClickEventsByUserId } from "@/repositories/link.repository";
 
 export async function getRecentVisitors(userId: string, limit = 10) {
   const events = await findRecentClickEventsByUserId(userId, limit);
@@ -25,14 +25,15 @@ export async function getVisitsOverTime(userId: string, days = 7) {
 }
 
 export async function getCtrStats(userId: string) {
-  const totalClicks = await countClickEventsByUserId(userId);
-  const topLinks = await findTopLinksByClicks(userId, 1);
-  const bestCtr = topLinks.length > 0 ? 12.3 : 0;
+  const [totalClicks, totalUniques] = await Promise.all([
+    countClickEventsByUserId(userId),
+    countUniqueClickEventsByUserId(userId),
+  ]);
+  const ctr = totalClicks > 0 ? Math.round((totalUniques / totalClicks) * 100 * 10) / 10 : 0;
   return {
-    average: 4.8,
-    best: bestCtr,
-    change: "+0.6",
     totalClicks,
+    totalUniques,
+    ctr,
   };
 }
 
