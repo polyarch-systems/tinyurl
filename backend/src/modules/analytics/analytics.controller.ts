@@ -1,5 +1,5 @@
 import { Context } from "hono";
-import { getRecentVisitors, getVisitsOverTime, getCtrStats, getTopLinks } from "./analytics.service";
+import { getRecentVisitors, getVisitsOverTime, getCtrStats, getTopLinks, getDashboardStatsService } from "./analytics.service";
 
 export async function recentVisitorsHandler(c: Context) {
   try {
@@ -41,5 +41,15 @@ export async function topLinksHandler(c: Context) {
     return c.json(links);
   } catch (err: any) {
     return c.json({ error: err.message || "Failed to fetch top links" }, 400);
+  }
+}
+
+export async function dashboardStatsHandler(c: Context) {
+  try {
+    const user = c.get("user");
+    const stats = await getDashboardStatsService(user.id);
+    return c.json(stats);
+  } catch (err: any) {
+    return c.json({ error: err.message || "Failed to fetch dashboard stats" }, 400);
   }
 }

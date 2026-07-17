@@ -146,3 +146,30 @@ export async function findTopLinksByClicks(userId: string, limit = 5) {
   });
   return links;
 }
+
+export async function getDashboardStats(userId: string) {
+  const [linkAgg, clickAgg] = await Promise.all([
+    prisma.link.aggregate({
+      where: { userId },
+      _count: true,
+      _sum: { clicks: true },
+    }),
+    prisma.link.count({
+      where: { userId, status: "active" },
+    }),
+  ]);
+
+  const totalLinks = linkAgg._count;
+  const activeLinks = clickAgg;
+  const totalClicks = linkAgg._sum.clicks ?? 0;
+  const averageClicksPerLink = totalLinks > 0
+    ? Math.round((Number(totalClicks) / totalLinks) * 10) / 10
+    : 0;
+
+  return {
+    totalLinks,
+    activeLinks,
+    totalClicks: Number(totalClicks),
+    averageClicksPerLink,
+  };
+}

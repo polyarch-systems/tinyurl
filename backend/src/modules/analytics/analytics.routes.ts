@@ -5,6 +5,7 @@ import {
   visitsOverTimeHandler,
   ctrStatsHandler,
   topLinksHandler,
+  dashboardStatsHandler,
 } from "./analytics.controller";
 import { z } from "zod";
 import {
@@ -132,7 +133,40 @@ const topLinksAnalyticsRoute = createRoute({
   },
 });
 
+const dashboardStatsSchema = z.object({
+  totalLinks: z.number().int(),
+  activeLinks: z.number().int(),
+  totalClicks: z.number().int(),
+  averageClicksPerLink: z.number(),
+});
+
+const dashboardStatsRoute = createRoute({
+  method: "get",
+  path: "/dashboard",
+  summary: "Get dashboard overview statistics",
+  tags: ["Analytics"],
+  responses: {
+    200: {
+      description: "Dashboard stats",
+      content: {
+        "application/json": {
+          schema: dashboardStatsSchema,
+        },
+      },
+    },
+    400: {
+      description: "Error fetching dashboard stats",
+      content: {
+        "application/json": {
+          schema: errorResponseSchema,
+        },
+      },
+    },
+  },
+});
+
 analyticsRoutes.openapi(recentVisitorsRoute, recentVisitorsHandler as Handler);
 analyticsRoutes.openapi(visitsOverTimeRoute, visitsOverTimeHandler as Handler);
 analyticsRoutes.openapi(ctrStatsRoute, ctrStatsHandler as Handler);
 analyticsRoutes.openapi(topLinksAnalyticsRoute, topLinksHandler as Handler);
+analyticsRoutes.openapi(dashboardStatsRoute, dashboardStatsHandler as Handler);

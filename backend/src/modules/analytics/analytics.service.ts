@@ -1,4 +1,4 @@
-import { findRecentClickEventsByUserId, findVisitsOverTime, findTopLinksByClicks, countClickEventsByUserId, countUniqueClickEventsByUserId } from "@/repositories/link.repository";
+import { findRecentClickEventsByUserId, findVisitsOverTime, findTopLinksByClicks, countClickEventsByUserId, countUniqueClickEventsByUserId, getDashboardStats } from "@/repositories/link.repository";
 
 export async function getRecentVisitors(userId: string, limit = 10) {
   const events = await findRecentClickEventsByUserId(userId, limit);
@@ -46,6 +46,10 @@ export async function getTopLinks(userId: string, limit = 5) {
     clicks: link.clicks,
     rank: index + 1,
   }));
+}
+
+export async function getDashboardStatsService(userId: string) {
+  return getDashboardStats(userId);
 }
 
 function formatTimeAgo(date: Date): string {
