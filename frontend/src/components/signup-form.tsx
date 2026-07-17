@@ -3,8 +3,8 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Link2, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
-import { signIn } from "@/lib/auth";
+import { Link2, Mail, Lock, User, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { signUp } from "@/lib/auth";
 
 function GitHubIcon() {
   return (
@@ -27,20 +27,36 @@ function GoogleIcon() {
   );
 }
 
-export function SignInForm() {
+export function SignUpForm() {
   const router = useRouter();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setError(null);
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
     setLoading(true);
     try {
-      await signIn(email, password);
+      await signUp(email, password, name);
       router.push("/dashboard");
-    } catch {
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
       setLoading(false);
     }
   };
@@ -61,10 +77,10 @@ export function SignInForm() {
           </div>
         </a>
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-          Welcome back
+          Create your account
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Sign in to your TinyURL account
+          Get started with TinyURL in seconds
         </p>
       </div>
 
@@ -92,8 +108,39 @@ export function SignInForm() {
         </div>
       </div>
 
+      {/* Error */}
+      {error && (
+        <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-500">
+          {error}
+        </div>
+      )}
+
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-foreground mb-1.5"
+          >
+            Full Name
+          </label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <User className="w-4 h-4 text-muted-foreground" />
+            </div>
+            <input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="John Doe"
+              className="w-full h-10 pl-10 pr-3 rounded-xl border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground/50 outline-none transition-all duration-200 focus:border-brand/40 focus:shadow-glow-sm"
+              required
+              autoComplete="name"
+            />
+          </div>
+        </div>
+
         <div>
           <label
             htmlFor="email"
@@ -113,25 +160,18 @@ export function SignInForm() {
               placeholder="you@example.com"
               className="w-full h-10 pl-10 pr-3 rounded-xl border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground/50 outline-none transition-all duration-200 focus:border-brand/40 focus:shadow-glow-sm"
               required
+              autoComplete="email"
             />
           </div>
         </div>
 
         <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-foreground"
-            >
-              Password
-            </label>
-            <a
-              href="#"
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Forgot password?
-            </a>
-          </div>
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-foreground mb-1.5"
+          >
+            Password
+          </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <Lock className="w-4 h-4 text-muted-foreground" />
@@ -141,9 +181,11 @@ export function SignInForm() {
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
+              placeholder="Create a password"
               className="w-full h-10 pl-10 pr-10 rounded-xl border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground/50 outline-none transition-all duration-200 focus:border-brand/40 focus:shadow-glow-sm"
               required
+              minLength={6}
+              autoComplete="new-password"
             />
             <button
               type="button"
@@ -159,6 +201,30 @@ export function SignInForm() {
           </div>
         </div>
 
+        <div>
+          <label
+            htmlFor="confirmPassword"
+            className="block text-sm font-medium text-foreground mb-1.5"
+          >
+            Confirm Password
+          </label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <Lock className="w-4 h-4 text-muted-foreground" />
+            </div>
+            <input
+              id="confirmPassword"
+              type={showPassword ? "text" : "password"}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Confirm your password"
+              className="w-full h-10 pl-10 pr-3 rounded-xl border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground/50 outline-none transition-all duration-200 focus:border-brand/40 focus:shadow-glow-sm"
+              required
+              autoComplete="new-password"
+            />
+          </div>
+        </div>
+
         <button
           type="submit"
           disabled={loading}
@@ -168,21 +234,33 @@ export function SignInForm() {
             <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           ) : (
             <>
-              Sign In
+              Create Account
               <ArrowRight className="w-3.5 h-3.5" />
             </>
           )}
         </button>
       </form>
 
+      {/* Terms */}
+      <p className="mt-4 text-center text-xs text-muted-foreground">
+        By creating an account, you agree to our{" "}
+        <a href="#" className="underline hover:text-foreground transition-colors">
+          Terms of Service
+        </a>{" "}
+        and{" "}
+        <a href="#" className="underline hover:text-foreground transition-colors">
+          Privacy Policy
+        </a>
+      </p>
+
       {/* Footer */}
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        Don't have an account?{" "}
+        Already have an account?{" "}
         <a
-          href="/signup"
+          href="/signin"
           className="font-medium text-foreground hover:text-brand transition-colors"
         >
-          Create one
+          Sign in
         </a>
       </p>
     </motion.div>
