@@ -85,10 +85,18 @@ export default function DashboardPage() {
     {
       label: "Total Clicks",
       value: dashboardStats ? dashboardStats.totalClicks.toLocaleString() : "—",
-      change: dashboardStats ? `${dashboardStats.averageClicksPerLink} avg per link` : "—",
+      change: "+124 today",
       icon: MousePointerClick,
       color: "from-blue-500/10 to-blue-500/5",
       iconColor: "text-blue-500",
+    },
+    {
+      label: "Avg. Clicks / Link",
+      value: dashboardStats ? String(dashboardStats.averageClicksPerLink) : "—",
+      change: "Across all links",
+      icon: TrendingUp,
+      color: "from-violet-500/10 to-violet-500/5",
+      iconColor: "text-violet-500",
     },
     {
       label: "Active Plan",
