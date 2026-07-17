@@ -1,5 +1,5 @@
 import { Context } from 'hono';
-import type { LinkStatus } from '@/repositories/mock-data';
+import type { LinkStatus } from '@/repositories/link.repository';
 import {
   createNewLink,
   getLink,

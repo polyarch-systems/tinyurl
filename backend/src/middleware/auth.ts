@@ -1,7 +1,7 @@
 import { Context, Next } from "hono";
 import { env } from "@/config/env";
 import { verifyToken } from "@/utils/jwt";
-import { findUserById } from "@/repositories/mock-data";
+import { findUserById } from "@/repositories/user.repository";
 
 export async function authMiddleware(c: Context, next: Next) {
   const header = c.req.header("Authorization");

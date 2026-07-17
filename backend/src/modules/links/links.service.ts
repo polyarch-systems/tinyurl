@@ -1,4 +1,4 @@
-import type { LinkStatus } from "@/repositories/mock-data";
+import type { LinkStatus } from "@/repositories/link.repository";
 import {
   createLink,
   findLinkById,
@@ -9,9 +9,11 @@ import {
   incrementLinkClicks,
   findTopLinksByUserId,
   findLinkByShortCode,
+} from "@/repositories/link.repository";
+import {
   incrementLinksUsed,
   decrementLinksUsed,
-} from "@/repositories/mock-data";
+} from "@/repositories/user.repository";
 
 export async function createNewLink(userId: string, data: { originalUrl: string; shortCode: string; expiresAt?: Date }) {
   const link = await createLink({ ...data, userId });

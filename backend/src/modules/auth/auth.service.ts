@@ -1,7 +1,6 @@
-import bcrypt from "bcryptjs";
 import { env } from "@/config/env";
 import { signToken } from "@/utils/jwt";
-import { findUserByEmail, hashPassword, createUser } from "@/repositories/mock-data";
+import { findUserByEmail, hashPassword, createUser } from "@/repositories/user.repository";
 
 export async function signup(data: { email: string; name: string; password: string }) {
   const existing = await findUserByEmail(data.email);

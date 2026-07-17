@@ -1,4 +1,4 @@
-import { findRecentClickEventsByUserId, findVisitsOverTime, findTopLinksByClicks, countClickEventsByUserId } from "@/repositories/mock-data";
+import { findRecentClickEventsByUserId, findVisitsOverTime, findTopLinksByClicks, countClickEventsByUserId } from "@/repositories/link.repository";
 
 export async function getRecentVisitors(userId: string, limit = 10) {
   const events = await findRecentClickEventsByUserId(userId, limit);
