@@ -52,10 +52,17 @@ export interface VisitPoint {
   visits: number;
 }
 
-export interface CtrStats {
+export type CtrStats = {
   totalClicks: number;
   totalUniques: number;
   ctr: number;
+};
+
+export interface DashboardStats {
+  totalLinks: number;
+  activeLinks: number;
+  totalClicks: number;
+  averageClicksPerLink: number;
 }
 
 export interface TopLinkAnalytics {
@@ -241,6 +248,10 @@ export async function getTopLinks(limit?: number): Promise<Link[]> {
 }
 
 // ── Analytics ───────────────────────────────────────────────────────────────
+
+export async function getDashboardStats(): Promise<DashboardStats> {
+  return request<DashboardStats>("/api/analytics/dashboard");
+}
 
 export async function getRecentVisitors(
   limit?: number

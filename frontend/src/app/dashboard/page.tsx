@@ -15,10 +15,12 @@ import {
   getTopLinks,
   getRecentVisitors,
   getCtrStats,
+  getDashboardStats,
   getStoredUser,
   type Link,
   type RecentVisitor,
   type CtrStats,
+  type DashboardStats,
   type User,
 } from "@/lib/api";
 
@@ -44,23 +46,23 @@ export default function DashboardPage() {
   const [links, setLinks] = useState<Link[]>([]);
   const [topPerforming, setTopPerforming] = useState<Link[]>([]);
   const [visitors, setVisitors] = useState<RecentVisitor[]>([]);
-  const [ctrStats, setCtrStats] = useState<CtrStats | null>(null);
+  const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
       try {
-        const [linksRes, topRes, visitorsRes, ctrRes] = await Promise.all([
+        const [linksRes, topRes, visitorsRes, dashRes] = await Promise.all([
           getLinks({ limit: 5 }),
           getTopLinks(5),
           getRecentVisitors(5),
-          getCtrStats(),
+          getDashboardStats(),
         ]);
         setLinks(linksRes.links);
         setTopPerforming(topRes);
         setVisitors(visitorsRes);
-        setCtrStats(ctrRes);
+        setDashboardStats(dashRes);
         setUser(getStoredUser());
       } catch {
         // silent
@@ -71,38 +73,22 @@ export default function DashboardPage() {
     load();
   }, []);
 
-  const totalClicks = links.reduce((sum, l) => sum + l.clicks, 0);
-
   const statCards = [
     {
       label: "Total Links",
-      value: user ? String(user.linksUsed) : String(links.length),
-      change: `${links.length} active`,
+      value: dashboardStats ? String(dashboardStats.totalLinks) : "—",
+      change: dashboardStats ? `${dashboardStats.activeLinks} active` : "—",
       icon: Link2,
       color: "from-brand/10 to-brand/5",
       iconColor: "text-brand",
     },
     {
       label: "Total Clicks",
-      value: ctrStats
-        ? ctrStats.totalClicks.toLocaleString()
-        : totalClicks.toLocaleString(),
-      change: `${
-        ctrStats && ctrStats.totalUniques
-          ? ctrStats.totalUniques.toLocaleString()
-          : "0"
-      } unique`,
+      value: dashboardStats ? dashboardStats.totalClicks.toLocaleString() : "—",
+      change: dashboardStats ? `${dashboardStats.averageClicksPerLink} avg per link` : "—",
       icon: MousePointerClick,
-      color: "from-emerald-500/10 to-emerald-500/5",
-      iconColor: "text-emerald-500",
-    },
-    {
-      label: "CTR",
-      value: ctrStats ? `${ctrStats.ctr}%` : "—",
-      change: "Click-through rate",
-      icon: TrendingUp,
-      color: "from-violet-500/10 to-violet-500/5",
-      iconColor: "text-violet-500",
+      color: "from-blue-500/10 to-blue-500/5",
+      iconColor: "text-blue-500",
     },
     {
       label: "Active Plan",
