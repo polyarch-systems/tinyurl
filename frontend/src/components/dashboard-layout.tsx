@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -17,7 +17,7 @@ import {
 import { signOut, getSession, type AuthSession } from "@/lib/auth";
 
 const sidebarItems = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Dashboard", href: "/", icon: LayoutDashboard },
   { label: "Links", href: "/dashboard/links", icon: Link2 },
   { label: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
@@ -28,11 +28,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
-  const [session, setSession] = useState<AuthSession | null>(null);
-
-  useEffect(() => {
-    setSession(getSession());
-  }, []);
+  const [session] = useState<AuthSession | null>(() => getSession());
 
   const handleSignOut = () => {
     signOut();
@@ -65,7 +61,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         {/* Logo */}
         <div className="flex items-center justify-between h-16 px-4 border-b border-border/50">
           <Link
-            href="/dashboard"
+            href="/"
             className={`flex items-center gap-2.5 group ${collapsed ? "justify-center w-full" : ""}`}
           >
             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-brand to-brand-dark flex items-center justify-center shadow-lg shadow-brand/20 flex-shrink-0">
@@ -146,10 +142,6 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               <Menu className="w-4 h-4" />
             </button>
             <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
-              <Link href="/" className="hover:text-foreground transition-colors">
-                Home
-              </Link>
-              <span>/</span>
               <span className="text-foreground font-medium">Dashboard</span>
             </div>
           </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Link2 } from "lucide-react";
 
 const footerLinks = {
@@ -16,14 +17,14 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 sm:gap-12">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <a href="/" className="flex items-center gap-2.5 group mb-4">
+            <Link href="/" className="flex items-center gap-2.5 group mb-4">
               <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-brand to-brand-dark flex items-center justify-center">
                 <Link2 className="w-3.5 h-3.5 text-white" />
               </div>
               <span className="font-semibold text-base tracking-tight text-foreground">
                 TinyURL
               </span>
-            </a>
+            </Link>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
               The modern link management platform for teams who care about
               performance and brand.

@@ -7,7 +7,6 @@ import {
   Link2,
   Sparkles,
   Zap,
-  Shield,
   Copy,
   ArrowRight,
   Check,

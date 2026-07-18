@@ -14,15 +14,14 @@ import {
   getLinks,
   getTopLinks,
   getRecentVisitors,
-  getCtrStats,
   getDashboardStats,
   getStoredUser,
   type Link,
   type RecentVisitor,
-  type CtrStats,
   type DashboardStats,
   type User,
 } from "@/lib/api";
+import { DashboardLayout } from "@/components/dashboard-layout";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -41,7 +40,15 @@ const itemVariants = {
   },
 };
 
-export default function DashboardPage() {
+export default function Home() {
+  return (
+    <DashboardLayout>
+      <DashboardContent />
+    </DashboardLayout>
+  );
+}
+
+function DashboardContent() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [links, setLinks] = useState<Link[]>([]);
   const [topPerforming, setTopPerforming] = useState<Link[]>([]);

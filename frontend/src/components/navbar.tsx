@@ -20,7 +20,7 @@ export function Navbar() {
       <nav className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-18">
           {/* Logo */}
-          <a href="/" className="flex items-center gap-2.5 group">
+          <Link href="/" className="flex items-center gap-2.5 group">
             <div className="relative">
               <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand to-brand-dark flex items-center justify-center shadow-lg shadow-brand/20 group-hover:shadow-brand/30 transition-shadow duration-300">
                 <Link2 className="w-4 h-4 text-white" />
@@ -30,7 +30,7 @@ export function Navbar() {
             <span className="font-semibold text-lg tracking-tight text-foreground">
               TinyURL
             </span>
-          </a>
+          </Link>
 
           {/* Desktop Nav */}
           <div className="hidden sm:flex items-center gap-8">

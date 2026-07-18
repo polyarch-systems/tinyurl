@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Link2, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { signIn } from "@/lib/auth";
+import Link from "next/link";
 
 function GitHubIcon() {
   return (
@@ -53,13 +54,13 @@ export function SignInForm() {
     >
       {/* Logo */}
       <div className="text-center mb-8">
-        <a href="/" className="inline-flex items-center gap-2.5 group mb-6">
+        <Link href="/" className="inline-flex items-center gap-2.5 group mb-6">
           <div className="relative">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand to-brand-dark flex items-center justify-center shadow-lg shadow-brand/20">
               <Link2 className="w-[18px] h-[18px] text-white" />
             </div>
           </div>
-        </a>
+        </Link>
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">
           Welcome back
         </h1>
@@ -125,12 +126,12 @@ export function SignInForm() {
             >
               Password
             </label>
-            <a
+            <Link
               href="#"
               className="text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
               Forgot password?
-            </a>
+            </Link>
           </div>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -178,12 +179,12 @@ export function SignInForm() {
       {/* Footer */}
       <p className="mt-6 text-center text-sm text-muted-foreground">
         Don't have an account?{" "}
-        <a
+        <Link
           href="/signup"
           className="font-medium text-foreground hover:text-brand transition-colors"
         >
           Create one
-        </a>
+        </Link>
       </p>
     </motion.div>
   );

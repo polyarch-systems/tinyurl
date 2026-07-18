@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Link2, Mail, Lock, User, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { signUp } from "@/lib/auth";
+import Link from "next/link";
 
 function GitHubIcon() {
   return (
@@ -69,13 +70,13 @@ export function SignUpForm() {
     >
       {/* Logo */}
       <div className="text-center mb-8">
-        <a href="/" className="inline-flex items-center gap-2.5 group mb-6">
+        <Link href="/" className="inline-flex items-center gap-2.5 group mb-6">
           <div className="relative">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand to-brand-dark flex items-center justify-center shadow-lg shadow-brand/20">
               <Link2 className="w-[18px] h-[18px] text-white" />
             </div>
           </div>
-        </a>
+          </Link>
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">
           Create your account
         </h1>
@@ -256,12 +257,12 @@ export function SignUpForm() {
       {/* Footer */}
       <p className="mt-6 text-center text-sm text-muted-foreground">
         Already have an account?{" "}
-        <a
+        <Link
           href="/signin"
           className="font-medium text-foreground hover:text-brand transition-colors"
         >
           Sign in
-        </a>
+        </Link>
       </p>
     </motion.div>
   );
