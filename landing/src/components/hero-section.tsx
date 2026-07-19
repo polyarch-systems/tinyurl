@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   Link2,
@@ -11,6 +10,8 @@ import {
   ArrowRight,
   Check,
 } from "lucide-react";
+
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
 function FloatingParticle({
   className,
@@ -143,14 +144,14 @@ export function HeroSection() {
                   Paste your long URL here...
                 </span>
               </div>
-              <Link
-                href="/signin"
+              <a
+                href={`${appUrl}/signin`}
                 className="relative inline-flex h-10 sm:h-11 items-center justify-center gap-1.5 rounded-xl bg-gradient-to-br from-brand to-brand-dark px-4 sm:px-5 text-sm font-medium text-white shadow-lg shadow-brand/20 hover:shadow-brand/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 whitespace-nowrap"
               >
                 <Zap className="w-4 h-4" />
                 <span>Shorten URL</span>
                 <ArrowRight className="w-3.5 h-3.5 hidden sm:inline" />
-              </Link>
+              </a>
             </div>
           </motion.div>
 

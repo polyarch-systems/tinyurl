@@ -3,6 +3,8 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
 export function CTASection() {
   return (
     <section className="relative py-24 sm:py-32">
@@ -43,13 +45,19 @@ export function CTASection() {
             </p>
 
             <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-              <button className="inline-flex h-11 sm:h-12 items-center justify-center gap-2 rounded-xl bg-white px-6 sm:px-8 text-sm font-semibold text-brand shadow-lg shadow-black/10 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300">
+              <a
+                href={`${appUrl}/signup`}
+                className="inline-flex h-11 sm:h-12 items-center justify-center gap-2 rounded-xl bg-white px-6 sm:px-8 text-sm font-semibold text-brand shadow-lg shadow-black/10 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+              >
                 Start Shortening Free
                 <ArrowRight className="w-4 h-4" />
-              </button>
-              <button className="inline-flex h-11 sm:h-12 items-center justify-center gap-2 rounded-xl border border-white/20 px-6 sm:px-8 text-sm font-medium text-white/90 hover:bg-white/10 transition-all duration-300">
+              </a>
+              <a
+                href={`${appUrl}/signin`}
+                className="inline-flex h-11 sm:h-12 items-center justify-center gap-2 rounded-xl border border-white/20 px-6 sm:px-8 text-sm font-medium text-white/90 hover:bg-white/10 transition-all duration-300"
+              >
                 Talk to Sales
-              </button>
+              </a>
             </div>
 
             <p className="mt-6 text-xs text-white/50">

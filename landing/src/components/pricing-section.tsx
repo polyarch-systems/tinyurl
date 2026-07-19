@@ -4,6 +4,8 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Check, ArrowRight, Sparkles } from "lucide-react";
 
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
 const plans = [
   {
     name: "Free",
@@ -210,7 +212,8 @@ export function PricingSection() {
               </ul>
 
               {/* CTA */}
-              <button
+              <a
+                href={`${appUrl}/signup`}
                 className={`inline-flex h-11 items-center justify-center gap-1.5 rounded-xl text-sm font-medium transition-all duration-300 active:scale-[0.98] ${
                   plan.popular
                     ? "bg-gradient-to-br from-brand to-brand-dark text-white shadow-lg shadow-brand/20 hover:shadow-brand/30 hover:scale-[1.02]"
@@ -219,7 +222,7 @@ export function PricingSection() {
               >
                 {plan.cta}
                 <ArrowRight className="w-3.5 h-3.5" />
-              </button>
+              </a>
             </motion.div>
           ))}
         </motion.div>
