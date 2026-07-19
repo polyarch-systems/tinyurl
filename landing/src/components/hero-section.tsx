@@ -1,14 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Link2,
   Sparkles,
   Zap,
-  Copy,
   ArrowRight,
-  Check,
 } from "lucide-react";
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
@@ -37,46 +34,6 @@ function FloatingParticle({
         ease: "easeInOut",
       }}
     />
-  );
-}
-
-function ExampleResult() {
-  const [copied, setCopied] = useState(false);
-  const shortUrl = "tiny.url/x7k9m2";
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(shortUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.3 }}
-      className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-gradient-to-r from-brand/5 to-brand/10 border border-brand/20"
-    >
-      <div className="flex-1 flex items-center gap-2 min-w-0">
-        <div className="w-1.5 h-1.5 rounded-full bg-brand animate-breathe" />
-        <span className="text-sm font-medium text-brand">
-          {shortUrl}
-        </span>
-        <span className="text-xs text-muted-foreground hidden sm:inline">
-          → tinyurl.com/this-is-a-very-long-url-that-gets-shortened
-        </span>
-      </div>
-      <button
-        onClick={handleCopy}
-        className="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-lg hover:bg-brand/10 transition-colors"
-      >
-        {copied ? (
-          <Check className="w-3.5 h-3.5 text-green-500" />
-        ) : (
-          <Copy className="w-3.5 h-3.5 text-muted-foreground" />
-        )}
-      </button>
-    </motion.div>
   );
 }
 
@@ -153,16 +110,6 @@ export function HeroSection() {
                 <ArrowRight className="w-3.5 h-3.5 hidden sm:inline" />
               </a>
             </div>
-          </motion.div>
-
-          {/* Example Result */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="mt-4 max-w-xl mx-auto"
-          >
-            <ExampleResult />
           </motion.div>
 
           {/* Trust Bar */}
