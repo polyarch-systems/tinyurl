@@ -182,7 +182,7 @@ export default function SettingsPage() {
               <div className="text-xl font-bold text-foreground">
                 {user?.plan || "Free"}
               </div>
-              <div className="text-[11px] text-emerald-500 mt-0.5 font-medium">
+              <div className="text-[11px] text-emerald-500 mt-1 font-medium">
                 {user?.plan === "Pro" ? "Premium features" : "Basic features"}
               </div>
             </div>
@@ -194,7 +194,7 @@ export default function SettingsPage() {
               <div className="text-xl font-bold text-foreground">
                 {user?.teamMembers ?? 0}
               </div>
-              <div className="text-[11px] text-emerald-500 mt-0.5 font-medium">
+              <div className="text-[11px] text-emerald-500 mt-1 font-medium">
                 Team members
               </div>
             </div>

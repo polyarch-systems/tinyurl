@@ -18,9 +18,9 @@ import { signOut, getSession, type AuthSession } from "@/lib/auth";
 
 const sidebarItems = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
-  { label: "Links", href: "/dashboard/links", icon: Link2 },
-  { label: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
-  { label: "Settings", href: "/dashboard/settings", icon: Settings },
+  { label: "Links", href: "/links", icon: Link2 },
+  { label: "Analytics", href: "/analytics", icon: BarChart3 },
+  { label: "Settings", href: "/settings", icon: Settings },
 ];
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {

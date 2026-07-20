@@ -40,7 +40,7 @@ export function SignInForm() {
     setLoading(true);
     try {
       await signIn(email, password);
-      router.push("/dashboard");
+      router.push("/");
     } catch {
       setLoading(false);
     }
