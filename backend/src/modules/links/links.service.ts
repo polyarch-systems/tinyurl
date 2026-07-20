@@ -14,11 +14,16 @@ import {
   incrementLinksUsed,
   decrementLinksUsed,
 } from "@/repositories/user.repository";
+import { env } from "@/config/env";
+
+function withShortUrl<T extends { shortCode: string }>(link: T) {
+  return { ...link, shortUrl: `${env.publicBaseUrl}/r/${link.shortCode}` };
+}
 
 export async function createNewLink(userId: string, data: { originalUrl: string; shortCode: string; expiresAt?: Date }) {
   const link = await createLink({ ...data, userId });
   await incrementLinksUsed(userId);
-  return link;
+  return withShortUrl(link);
 }
 
 export async function getLink(id: string, userId: string) {
@@ -26,7 +31,7 @@ export async function getLink(id: string, userId: string) {
   if (!link || link.userId !== userId) {
     throw new Error("Link not found");
   }
-  return link;
+  return withShortUrl(link);
 }
 
 export async function getLinks(userId: string, page = 1, limit = 20, search?: string) {
@@ -35,7 +40,13 @@ export async function getLinks(userId: string, page = 1, limit = 20, search?: st
     findLinksByUserId(userId, skip, limit, search),
     countLinksByUserId(userId, search),
   ]);
-  return { links, total, page, limit, totalPages: Math.ceil(total / limit) };
+  return {
+    links: links.map((link) => withShortUrl(link)),
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+  };
 }
 
 export async function updateExistingLink(id: string, userId: string, data: { originalUrl?: string; status?: LinkStatus; expiresAt?: Date | null }) {
@@ -43,7 +54,7 @@ export async function updateExistingLink(id: string, userId: string, data: { ori
   if (!link || link.userId !== userId) {
     throw new Error("Link not found");
   }
-  return updateLink(id, data);
+  return withShortUrl(await updateLink(id, data));
 }
 
 export async function removeLink(id: string, userId: string) {
@@ -65,5 +76,6 @@ export async function resolveShortCode(shortCode: string) {
 }
 
 export async function getTopLinks(userId: string, limit = 5) {
-  return findTopLinksByUserId(userId, limit);
+  const links = await findTopLinksByUserId(userId, limit);
+  return links.map((link) => withShortUrl(link));
 }
