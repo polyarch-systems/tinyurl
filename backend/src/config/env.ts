@@ -11,4 +11,5 @@ export const env = {
   jwtRefreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "7d",
   baseUrl: process.env.BASE_URL || "http://localhost:3001",
   frontendUrl: process.env.FRONTEND_URL || "http://localhost:3000",
+  publicBaseUrl: process.env.PUBLIC_BASE_URL || "http://localhost:3001",
 } as const;

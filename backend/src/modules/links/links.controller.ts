@@ -10,6 +10,7 @@ import {
   getTopLinks,
 } from './links.service';
 import { createLinkSchema, updateLinkSchema } from '@/validators/link';
+import { env } from '@/config/env';
 
 export async function createLinkHandler(c: Context) {
   try {
@@ -23,7 +24,7 @@ export async function createLinkHandler(c: Context) {
       shortCode,
       expiresAt,
     });
-    return c.json({ ...link, shortUrl: `${process.env.BASE_URL}/r/${link.shortCode}` }, 201);
+    return c.json({ ...link, shortUrl: `${env.publicBaseUrl}/r/${link.shortCode}` }, 201);
   } catch (err: any) {
     if (err.name === 'ZodError') {
       return c.json({ error: 'Validation failed', details: err.errors }, 400);
@@ -39,7 +40,13 @@ export async function getLinksHandler(c: Context) {
     const limit = Number(c.req.query('limit') || 20);
     const search = c.req.query('search') || undefined;
     const result = await getLinks(user.id, page, limit, search);
-    return c.json(result);
+    return c.json({
+      ...result,
+      links: result.links.map((link) => ({
+        ...link,
+        shortUrl: `${env.publicBaseUrl}/r/${link.shortCode}`,
+      })),
+    });
   } catch (err: any) {
     return c.json({ error: err.message || 'Failed to fetch links' }, 400);
   }
@@ -50,7 +57,7 @@ export async function getLinkHandler(c: Context) {
     const user = c.get('user');
     const id = c.req.param('id')!;
     const link = await getLink(id, user.id);
-    return c.json({ ...link, shortUrl: `${process.env.BASE_URL}/r/${link.shortCode}` });
+    return c.json({ ...link, shortUrl: `${env.publicBaseUrl}/r/${link.shortCode}` });
   } catch (err: any) {
     return c.json({ error: err.message || 'Link not found' }, 404);
   }
@@ -77,7 +84,7 @@ export async function updateLinkHandler(c: Context) {
             : undefined,
     };
     const link = await updateExistingLink(id, user.id, data);
-    return c.json({ ...link, shortUrl: `${process.env.BASE_URL}/r/${link.shortCode}` });
+    return c.json({ ...link, shortUrl: `${env.publicBaseUrl}/r/${link.shortCode}` });
   } catch (err: any) {
     if (err.name === 'ZodError') {
       return c.json({ error: 'Validation failed', details: err.errors }, 400);
@@ -112,7 +119,7 @@ export async function topLinksHandler(c: Context) {
     const limit = Number(c.req.query('limit') || 5);
     const links = await getTopLinks(user.id, limit);
     return c.json(
-      links.map((link) => ({ ...link, shortUrl: `${process.env.BASE_URL}/r/${link.shortCode}` }))
+      links.map((link) => ({ ...link, shortUrl: `${env.publicBaseUrl}/r/${link.shortCode}` }))
     );
   } catch (err: any) {
     return c.json({ error: err.message || 'Failed to fetch top links' }, 400);
