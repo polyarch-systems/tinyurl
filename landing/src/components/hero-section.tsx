@@ -97,7 +97,15 @@ export function HeroSection() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="mt-8 sm:mt-10 max-w-xl mx-auto"
           >
-            <div className="relative flex items-center gap-2 p-1.5 rounded-2xl bg-card border border-border/60 shadow-lg shadow-black/5 dark:shadow-black/20 transition-all duration-300">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (url) {
+                  window.location.href = `${appUrl}/signin`;
+                }
+              }}
+              className="relative flex items-center gap-2 p-1.5 rounded-2xl bg-card border border-border/60 shadow-lg shadow-black/5 dark:shadow-black/20 transition-all duration-300"
+            >
               <div className="flex-1 flex items-center gap-2 pl-3 sm:pl-4">
                 <Link2 className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                 <input
@@ -108,15 +116,15 @@ export function HeroSection() {
                   className="flex-1 text-left text-sm sm:text-base py-2.5 bg-transparent text-foreground placeholder-muted-foreground/50 outline-none min-w-0"
                 />
               </div>
-              <a
-                href={`${appUrl}/signin`}
+              <button
+                type="submit"
                 className="relative inline-flex h-10 sm:h-11 items-center justify-center gap-1.5 rounded-xl bg-gradient-to-br from-brand to-brand-dark px-4 sm:px-5 text-sm font-medium text-white shadow-lg shadow-brand/20 hover:shadow-brand/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 whitespace-nowrap"
               >
                 <Zap className="w-4 h-4" />
                 <span>Shorten URL</span>
                 <ArrowRight className="w-3.5 h-3.5 hidden sm:inline" />
-              </a>
-            </div>
+              </button>
+            </form>
           </motion.div>
 
           {/* Trust Bar */}
