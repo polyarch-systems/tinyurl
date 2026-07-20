@@ -147,7 +147,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2.5" suppressHydrationWarning>
               <div className="w-7 h-7 rounded-full bg-gradient-to-br from-brand to-brand-dark flex items-center justify-center text-[10px] font-bold text-white">
                 {session?.name ? session.name.charAt(0).toUpperCase() : "U"}
               </div>
