@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Link2,
@@ -38,6 +39,8 @@ function FloatingParticle({
 }
 
 export function HeroSection() {
+  const [url, setUrl] = useState("");
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 sm:pt-18">
       {/* Background gradient orbs */}
@@ -97,9 +100,13 @@ export function HeroSection() {
             <div className="relative flex items-center gap-2 p-1.5 rounded-2xl bg-card border border-border/60 shadow-lg shadow-black/5 dark:shadow-black/20 transition-all duration-300">
               <div className="flex-1 flex items-center gap-2 pl-3 sm:pl-4">
                 <Link2 className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                <span className="flex-1 text-left text-sm sm:text-base py-2.5 text-muted-foreground/50 min-w-0">
-                  Paste your long URL here...
-                </span>
+                <input
+                  type="url"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  placeholder="Paste your long URL here..."
+                  className="flex-1 text-left text-sm sm:text-base py-2.5 bg-transparent text-foreground placeholder-muted-foreground/50 outline-none min-w-0"
+                />
               </div>
               <a
                 href={`${appUrl}/signin`}
