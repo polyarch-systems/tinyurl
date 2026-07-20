@@ -109,7 +109,7 @@ export function HeroSection() {
               <div className="flex-1 flex items-center gap-2 pl-3 sm:pl-4">
                 <Link2 className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                 <input
-                  type="url"
+                  type="text"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
                   placeholder="Paste your long URL here..."
