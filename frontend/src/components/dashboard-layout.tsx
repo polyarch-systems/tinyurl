@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -28,7 +28,11 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
-  const [session] = useState<AuthSession | null>(() => getSession());
+  const [session, setSession] = useState<AuthSession | null>(null);
+
+  useEffect(() => {
+    setSession(getSession());
+  }, []);
 
   const handleSignOut = () => {
     signOut();
