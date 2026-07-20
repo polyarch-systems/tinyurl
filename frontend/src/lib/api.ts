@@ -199,7 +199,7 @@ export async function createLink(data: {
   shortCode?: string;
   expiresAt?: string;
 }): Promise<Link> {
-  return request<Link>("/api/links/", {
+  return request<Link>("/api/links", {
     method: "POST",
     body: JSON.stringify(data),
   });

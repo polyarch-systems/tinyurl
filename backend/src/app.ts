@@ -7,6 +7,12 @@ import { analyticsRoutes } from "@/modules/analytics/analytics.routes";
 import { redirectRoutes } from "@/modules/redirect/redirect.routes";
 import { authMiddleware } from "@/middleware/auth";
 
+// Custom JSON serializer to handle BigInt
+// eslint-disable-next-line
+(BigInt.prototype as any).toJSON = function () {
+  return Number(this);
+};
+
 const api = new OpenAPIHono();
 
 api.use("*", cors());
