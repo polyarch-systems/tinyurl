@@ -1,5 +1,5 @@
 import { Context } from "hono";
-import { resolveShortCode } from "@/modules/links/links.service";
+import { resolveShortCode } from "./redirect.service";
 
 export async function redirectHandler(c: Context) {
   const shortCode = c.req.param("shortCode")!;
