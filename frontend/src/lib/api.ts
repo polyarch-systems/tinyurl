@@ -63,6 +63,7 @@ export interface DashboardStats {
   activeLinks: number;
   totalClicks: number;
   averageClicksPerLink: number;
+  todayClicks: number;
 }
 
 export interface TopLinkAnalytics {

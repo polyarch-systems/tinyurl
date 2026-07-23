@@ -3,6 +3,21 @@ import { LinkStatus } from "@prisma/client";
 
 export type { LinkStatus };
 
+async function countClicksToday(userId: string) {
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+
+  const result = await prisma.clickEvent.aggregate({
+    where: {
+      userId,
+      createdAt: { gte: startOfDay },
+    },
+    _count: true,
+  });
+
+  return result._count;
+}
+
 export async function createLink(data: {
   userId: string;
   originalUrl: string;
@@ -148,7 +163,7 @@ export async function findTopLinksByClicks(userId: string, limit = 5) {
 }
 
 export async function getDashboardStats(userId: string) {
-  const [linkAgg, clickAgg] = await Promise.all([
+  const [linkAgg, clickAgg, todayClicks] = await Promise.all([
     prisma.link.aggregate({
       where: { userId },
       _count: true,
@@ -157,6 +172,7 @@ export async function getDashboardStats(userId: string) {
     prisma.link.count({
       where: { userId, status: "active" },
     }),
+    countClicksToday(userId),
   ]);
 
   const totalLinks = linkAgg._count;
@@ -171,5 +187,6 @@ export async function getDashboardStats(userId: string) {
     activeLinks,
     totalClicks: Number(totalClicks),
     averageClicksPerLink,
+    todayClicks,
   };
 }

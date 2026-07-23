@@ -138,6 +138,7 @@ const dashboardStatsSchema = z.object({
   activeLinks: z.number().int(),
   totalClicks: z.number().int(),
   averageClicksPerLink: z.number(),
+  todayClicks: z.number().int(),
 });
 
 const dashboardStatsRoute = createRoute({

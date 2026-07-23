@@ -83,7 +83,7 @@ export function DashboardContent() {
     {
       label: "Total Clicks",
       value: dashboardStats ? dashboardStats.totalClicks.toLocaleString() : "—",
-      change: "+124 today",
+      change: dashboardStats ? `${dashboardStats.todayClicks} today` : "—",
       icon: MousePointerClick,
       color: "from-blue-500/10 to-blue-500/5",
       iconColor: "text-blue-500",
