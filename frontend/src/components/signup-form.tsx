@@ -55,7 +55,7 @@ export function SignUpForm() {
     setLoading(true);
     try {
       await signUp(email, password, name);
-      router.push("/dashboard");
+      router.push("/");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
       setLoading(false);
