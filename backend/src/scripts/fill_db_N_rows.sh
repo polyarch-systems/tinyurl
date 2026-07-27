@@ -70,8 +70,11 @@ fi
 # ── Phase 2: Bulk insert via psql ───────────────────────────────────────────
 echo ""
 echo "=== Phase 2: Bulk-inserting $NUM_LINKS random links via psql ==="
+echo "  Started at: $(date)"
+echo "  This may take a while — no output until it finishes..."
+echo ""
 
-psql "$PSQL_URL" <<SQL
+psql "$PSQL_URL" --echo-errors <<SQL
 -- Insert $NUM_LINKS random links
 INSERT INTO links (
   id,
@@ -121,10 +124,8 @@ ON CONFLICT (short_code) DO NOTHING;
 SQL
 
 echo ""
-echo "=== Done ==="
+echo "=== Done at $(date) ==="
 echo "  Inserted up to $NUM_LINKS random links (some may have been skipped due to short_code conflicts)."
 echo ""
 echo "Verify:"
-echo "  curl -s http://localhost:3001/r/gh -I"
-echo "  curl -s http://localhost:3001/r/test1 -I"
 echo "  psql \"$PSQL_URL\" -c 'SELECT count(*) FROM links;'"
