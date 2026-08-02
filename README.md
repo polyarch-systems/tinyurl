@@ -27,3 +27,15 @@ If I can't explain what problem a technology solves, it doesn't belong here.
 I want the project to evolve the same way real software evolves: from a small application solving a real problem into a system whose architecture is driven by requirements rather than trends.
 
 <img width="1619" height="972" alt="image" src="https://github.com/user-attachments/assets/18cb6787-deb3-4d12-9b88-1947895c248a" />
+
+<br />
+
+## Load testing
+
+The backend includes a [k6](https://k6.io/) load test script at `backend/src/scripts/k6/index.js`. It simulates 10,000 concurrent users hitting the redirect endpoint `http://localhost:3001/r/z0mmsxrq` for 30 seconds.
+
+With the backend running locally, start the test with:
+
+```bash
+k6 run backend/src/scripts/k6/index.js
+```
